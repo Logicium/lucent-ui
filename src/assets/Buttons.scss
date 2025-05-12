@@ -1,0 +1,43 @@
+@import "Fonts";
+
+.button{
+  background-color: black;
+  width: fit-content;
+  height: 45px;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: $padding;
+  cursor: pointer;
+  box-sizing: border-box;
+  border: 2px solid transparent;
+}
+
+.button.ghost{
+  background-color: transparent;
+  border: 2px solid black;
+  color: black;
+  transition: 0.5s;
+}
+
+.button.ghost:hover{
+  background-color: black;
+  border: 2px solid black;
+  color: white;
+  transition: 0.5s;
+}
+
+.button.empty{
+  background-color: transparent;
+  color: black;
+  border-right: none;
+  border-left:none;
+  width: fit-content;
+  padding: $padding 0;
+  transition: 0.5s;
+}
+.button.empty:hover{
+  border-bottom: 2px solid black;
+  transition: 0.5s;
+}

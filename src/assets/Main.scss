@@ -1,0 +1,107 @@
+@import "Fonts";
+@import "Buttons";
+
+#app {
+  color: black;
+  background-color: white;
+  font-family: "Public Sans", sans-serif;
+  font-size: $fontNormal;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+a {
+  color: black;
+  text-decoration: none;
+}
+
+.small{
+  font-size: $fontSmall;
+}
+
+.big{
+  font-size: $fontBig;
+}
+
+.med{
+  font-size: $fontMed;
+}
+
+.bold{
+  font-weight: 600;
+}
+
+.header{
+  font-size: $fontBig;
+  line-height: calc(4px + $fontBig);
+  font-weight: 600;
+}
+
+.gap{
+  margin-right: $padding;
+}
+
+.italic{
+  font-style: italic;
+}
+
+.top{
+  margin-bottom: $padding;
+}
+
+.title{
+  font-size: $fontMed;
+  font-weight: 600;
+}
+
+.image{
+  background-position: center;
+  background-size: cover;
+}
+
+.container {
+  padding: $padding;
+  margin-bottom: $paddingMed;
+}
+
+.flex {
+  display: flex;
+}
+
+.flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.align-center {
+  align-items: center;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.mt-1 {
+  margin-top: $padding;
+}
+
+.mb-1 {
+  margin-bottom: $padding;
+}
+
+.mt-2 {
+  margin-top: $paddingMed;
+}
+
+.mb-2 {
+  margin-bottom: $paddingMed;
+}
