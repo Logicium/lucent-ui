@@ -125,24 +125,23 @@ onMounted(() => {
 .search-input {
   width: 100%;
   padding: $padding;
-  border: 1px solid #eee;
+  border: 2px solid #eee;
   font-size: $fontNormal;
 }
 
 .repositories-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: $paddingMed;
+  grid-gap: $paddingMed;
 }
 
 .repository-card {
-  border: 1px solid #eee;
+  border: 2px solid #eee;
   padding: $paddingMed;
   cursor: pointer;
   transition: all 0.3s ease;
   display: flex;
   flex-direction: column;
-  height: 100%;
 }
 
 .repository-card:hover {
@@ -160,7 +159,7 @@ onMounted(() => {
   align-items: center;
   margin-top: $padding;
   padding-top: $padding;
-  border-top: 1px solid #eee;
+  border-top: 2px solid #eee;
 }
 
 .loading-container, .error-container, .empty-container {

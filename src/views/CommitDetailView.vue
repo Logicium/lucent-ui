@@ -204,19 +204,17 @@ onMounted(() => {
             </div>
 
             <div v-else class="doc-actions">
-              <div class="doc-type-selector">
-                <label for="docType">Document Type:</label>
-                <select id="docType" v-model="selectedDocType" class="doc-type-select">
-                  <option v-for="option in docTypeOptions" :key="option.value" :value="option.value">
-                    {{ option.label }}
-                  </option>
-                </select>
-              </div>
-
               <div class="button-group">
+                <div class="doc-type-selector">
+                  <select id="docType" v-model="selectedDocType" class="doc-type-select">
+                    <option v-for="option in docTypeOptions" :key="option.value" :value="option.value">
+                      {{ option.label }}
+                    </option>
+                  </select>
+                </div>
                 <div class="button" @click="generateArticle(true)" :class="{ 'disabled': isGenerating }">
                   <span v-if="isGenerating">Regenerating...</span>
-                  <span v-else>Regenerate {{ getDocTypeLabel() }}</span>
+                  <span v-else>Regenerate</span>
                 </div>
                 <div class="button" @click="saveArticle">Save Changes</div>
               </div>
@@ -272,9 +270,6 @@ onMounted(() => {
               v-show="viewMode === 'markdown' || viewMode === 'splitview'"
               style="width: 100%; box-sizing: border-box;"
             >
-              <div class="preview-header">
-                <h3 class="title">Preview</h3>
-              </div>
               <div class="markdown-preview">
                 <VueMarkdownRender :source="editedArticle" />
               </div>
@@ -306,7 +301,7 @@ onMounted(() => {
 .commit-header {
   margin-bottom: $paddingMed;
   padding-bottom: $paddingMed;
-  border-bottom: 1px solid #eee;
+  border-bottom: 2px solid #eee;
 }
 
 .commit-meta {
@@ -335,9 +330,9 @@ onMounted(() => {
 
 .doc-type-select {
   padding: 8px;
-  border: 1px solid #eee;
-  border-radius: 4px;
-  font-size: $fontSmall;
+  border: 2px solid #eee;
+  height: 45px;
+  font-size: $fontNormal;
 }
 
 .doc-actions {
@@ -358,7 +353,7 @@ onMounted(() => {
   justify-content: center;
   min-height: 300px;
   text-align: center;
-  border: 1px solid #eee;
+  border: 2px solid #eee;
   padding: $paddingMed;
 }
 
@@ -387,10 +382,9 @@ onMounted(() => {
   cursor: pointer;
   padding: $padding/2 $padding;
   background-color: #f5f5f5;
-  border-radius: 4px;
   font-size: $fontSmall;
   transition: background-color 0.2s, border-color 0.2s;
-  border: 1px solid transparent;
+  border: 2px solid transparent;
 }
 
 .view-mode-button:hover {
@@ -407,7 +401,7 @@ onMounted(() => {
   width: 100%;
   min-height: 500px;
   padding: $padding;
-  border: 1px solid #eee;
+  border: 2px solid #eee;
   font-family: monospace;
   font-size: $fontNormal;
   resize: vertical;
@@ -435,7 +429,7 @@ onMounted(() => {
 }
 
 .markdown-preview {
-  border: 1px solid #eee;
+  border: 2px solid #eee;
   padding: $padding;
   min-height: 500px;
   overflow-y: auto;

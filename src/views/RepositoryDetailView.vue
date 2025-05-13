@@ -178,7 +178,7 @@ onMounted(() => {
 .repository-header {
   margin-bottom: $paddingMed;
   padding-bottom: $paddingMed;
-  border-bottom: 1px solid #eee;
+  border-bottom: 2px solid #eee;
 }
 
 .repository-link {
@@ -192,7 +192,7 @@ onMounted(() => {
 .search-input {
   width: 100%;
   padding: $padding;
-  border: 1px solid #eee;
+  border: 2px solid #eee;
   font-size: $fontNormal;
 }
 
@@ -203,7 +203,7 @@ onMounted(() => {
 }
 
 .commit-card {
-  border: 1px solid #eee;
+  border: 2px solid #eee;
   padding: $paddingMed;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -246,7 +246,7 @@ onMounted(() => {
   align-items: center;
   margin-top: $padding;
   padding-top: $padding;
-  border-top: 1px solid #eee;
+  border-top: 2px solid #eee;
 }
 
 .article-badge {

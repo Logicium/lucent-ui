@@ -66,7 +66,7 @@ onMounted(() => {
 .login-card {
   max-width: 500px;
   padding: $paddingLg;
-  border: 1px solid #eee;
+  border: 2px solid #eee;
   display: flex;
   flex-direction: column;
   align-items: center;

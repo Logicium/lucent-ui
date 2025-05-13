@@ -64,7 +64,7 @@ const navigateToLogin = () => {
 
 .feature {
   padding: $padding;
-  border: 1px solid #eee;
+  border: 2px solid #eee;
 }
 
 .cta-section {

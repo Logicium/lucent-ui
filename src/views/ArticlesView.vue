@@ -150,7 +150,7 @@ onMounted(() => {
 .search-input {
   width: 100%;
   padding: $padding;
-  border: 1px solid #eee;
+  border: 2px solid #eee;
   font-size: $fontNormal;
 }
 
@@ -161,7 +161,7 @@ onMounted(() => {
 }
 
 .article-card {
-  border: 1px solid #eee;
+  border: 2px solid #eee;
   padding: $paddingMed;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -205,7 +205,7 @@ onMounted(() => {
   justify-content: flex-end;
   margin-top: $padding;
   padding-top: $padding;
-  border-top: 1px solid #eee;
+  border-top: 2px solid #eee;
 }
 
 .loading-container, .error-container, .empty-container {

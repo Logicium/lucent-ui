@@ -41,7 +41,7 @@ import { RouterLink, RouterView } from 'vue-router'
   justify-content: space-between;
   align-items: center;
   padding: 0 0 $paddingMed 0;
-  border-bottom: 1px solid #eee;
+  border-bottom: 2px solid #eee;
   margin-bottom: $paddingMed;
 }
 
@@ -81,7 +81,7 @@ import { RouterLink, RouterView } from 'vue-router'
 .footer-container {
   margin-top: $paddingLg;
   padding-top: $padding;
-  border-top: 1px solid #eee;
+  border-top: 2px solid #eee;
   text-align: center;
 }
 
