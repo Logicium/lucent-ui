@@ -11,7 +11,20 @@ const isLoading = ref(true)
 const isGenerating = ref(false)
 const errorMessage = ref('')
 const editedArticle = ref('')
-const showRenderedMarkdown = ref(true)
+const viewMode = ref('splitview') // 'editor', 'markdown', or 'splitview'
+const selectedDocType = ref('article') // Default to step-by-step article
+
+// Document type options
+const docTypeOptions = [
+  { value: 'article', label: 'Step-by-Step Article' },
+  { value: 'api', label: 'API Documentation' },
+  { value: 'faq', label: 'FAQs' },
+  { value: 'slides', label: 'Presentation Slides' },
+  { value: 'video', label: 'Video Script' },
+  { value: 'release', label: 'Release Notes' },
+  { value: 'review', label: 'Code Review' },
+  { value: 'roast', label: 'Roast (Experimental)' }
+]
 
 // Fetch commit details from the API
 const fetchCommitDetails = async () => {
@@ -46,7 +59,7 @@ const fetchCommitDetails = async () => {
 }
 
 // Generate article for this commit
-const generateArticle = async () => {
+const generateArticle = async (forceRegenerate = false) => {
   isGenerating.value = true
   errorMessage.value = ''
 
@@ -57,8 +70,13 @@ const generateArticle = async () => {
     const response = await fetch(`${backendUrl}/commits/${commitId}/generate-article`, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${token}`
-      }
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        docType: selectedDocType.value,
+        forceRegenerate: forceRegenerate
+      })
     })
 
     if (!response.ok) {
@@ -124,6 +142,12 @@ const goBack = () => {
   }
 }
 
+// Get the label for the selected document type
+const getDocTypeLabel = () => {
+  const option = docTypeOptions.find(opt => opt.value === selectedDocType.value)
+  return option ? option.label : 'Document'
+}
+
 onMounted(() => {
   fetchCommitDetails()
 })
@@ -158,51 +182,102 @@ onMounted(() => {
 
       <div class="article-section mt-2">
         <div class="article-header">
-          <h2 class="title">How-to Article</h2>
+          <h2 class="title">{{ getDocTypeLabel() }}</h2>
 
-          <div v-if="!commit.articleGenerated" class="article-actions">
-            <div
-              class="button"
-              @click="generateArticle"
-              :class="{ 'disabled': isGenerating }"
-            >
-              <span v-if="isGenerating">Generating...</span>
-              <span v-else>Generate Article</span>
+          <div class="article-actions">
+            <div v-if="!commit.articleGenerated" class="doc-type-selector">
+              <label for="docType">Document Type:</label>
+              <select id="docType" v-model="selectedDocType" class="doc-type-select">
+                <option v-for="option in docTypeOptions" :key="option.value" :value="option.value">
+                  {{ option.label }}
+                </option>
+              </select>
+
+              <div
+                class="button"
+                @click="generateArticle(false)"
+                :class="{ 'disabled': isGenerating }"
+              >
+                <span v-if="isGenerating">Generating...</span>
+                <span v-else>Generate {{ getDocTypeLabel() }}</span>
+              </div>
             </div>
-          </div>
 
-          <div v-else class="article-actions">
-            <div class="button" @click="saveArticle">Save Changes</div>
+            <div v-else class="doc-actions">
+              <div class="doc-type-selector">
+                <label for="docType">Document Type:</label>
+                <select id="docType" v-model="selectedDocType" class="doc-type-select">
+                  <option v-for="option in docTypeOptions" :key="option.value" :value="option.value">
+                    {{ option.label }}
+                  </option>
+                </select>
+              </div>
+
+              <div class="button-group">
+                <div class="button" @click="generateArticle(true)" :class="{ 'disabled': isGenerating }">
+                  <span v-if="isGenerating">Regenerating...</span>
+                  <span v-else>Regenerate {{ getDocTypeLabel() }}</span>
+                </div>
+                <div class="button" @click="saveArticle">Save Changes</div>
+              </div>
+            </div>
           </div>
         </div>
 
         <div v-if="!commit.articleGenerated && !isGenerating" class="article-placeholder">
-          <p>No article has been generated for this commit yet.</p>
-          <p>Click the "Generate Article" button to create a how-to article based on this commit's changes.</p>
+          <p>No {{ getDocTypeLabel().toLowerCase() }} has been generated for this commit yet.</p>
+          <p>Click the "Generate {{ getDocTypeLabel() }}" button to create documentation based on this commit's changes.</p>
         </div>
 
         <div v-else-if="isGenerating" class="article-placeholder">
-          <p>Generating article...</p>
-          <p>This may take a moment as we analyze the code changes and create a comprehensive guide.</p>
+          <p>Generating {{ getDocTypeLabel().toLowerCase() }}...</p>
+          <p>This may take a moment as we analyze the code changes and create comprehensive documentation.</p>
         </div>
 
-        <div v-else class="article-editor">
-          <textarea
-            v-model="editedArticle"
-            class="article-textarea"
-            placeholder="Article content will appear here"
-          ></textarea>
-
-          <div class="article-preview">
-            <div class="preview-header">
-              <h3 class="title">Preview</h3>
-              <div class="toggle-button" @click="showRenderedMarkdown = !showRenderedMarkdown">
-                {{ showRenderedMarkdown ? 'Show Raw' : 'Show Rendered' }}
-              </div>
+        <div v-else>
+          <div class="view-mode-buttons">
+            <div
+              class="view-mode-button"
+              :class="{ active: viewMode === 'editor' }"
+              @click="viewMode = 'editor'"
+            >
+              Editor
             </div>
-            <div class="markdown-preview">
-              <pre v-if="!showRenderedMarkdown">{{ editedArticle }}</pre>
-<!--              <VueMarkdownRender v-else :text="editedArticle" />-->
+            <div
+              class="view-mode-button"
+              :class="{ active: viewMode === 'markdown' }"
+              @click="viewMode = 'markdown'"
+            >
+              Markdown
+            </div>
+            <div
+              class="view-mode-button"
+              :class="{ active: viewMode === 'splitview' }"
+              @click="viewMode = 'splitview'"
+            >
+              Split View
+            </div>
+          </div>
+
+          <div class="article-editor" :class="viewMode">
+            <textarea
+              v-model="editedArticle"
+              class="article-textarea"
+              placeholder="Article content will appear here"
+              v-show="viewMode === 'editor' || viewMode === 'splitview'"
+            ></textarea>
+
+            <div
+              class="article-preview"
+              v-show="viewMode === 'markdown' || viewMode === 'splitview'"
+              style="width: 100%; box-sizing: border-box;"
+            >
+              <div class="preview-header">
+                <h3 class="title">Preview</h3>
+              </div>
+              <div class="markdown-preview">
+                <VueMarkdownRender :source="editedArticle" />
+              </div>
             </div>
           </div>
         </div>
@@ -246,6 +321,36 @@ onMounted(() => {
   margin-bottom: $paddingMed;
 }
 
+.article-actions {
+  display: flex;
+  flex-direction: column;
+  gap: $padding;
+}
+
+.doc-type-selector {
+  display: flex;
+  align-items: center;
+  gap: $padding;
+}
+
+.doc-type-select {
+  padding: 8px;
+  border: 1px solid #eee;
+  border-radius: 4px;
+  font-size: $fontSmall;
+}
+
+.doc-actions {
+  display: flex;
+  flex-direction: column;
+  gap: $padding;
+}
+
+.button-group {
+  display: flex;
+  gap: $padding;
+}
+
 .article-placeholder {
   display: flex;
   flex-direction: column;
@@ -259,8 +364,43 @@ onMounted(() => {
 
 .article-editor {
   display: grid;
-  grid-template-columns: 1fr 1fr;
   gap: $paddingMed;
+}
+
+.article-editor.splitview {
+  grid-template-columns: 50% 50%;
+  width: 100%;
+}
+
+.article-editor.editor,
+.article-editor.markdown {
+  grid-template-columns: 1fr;
+}
+
+.view-mode-buttons {
+  display: flex;
+  gap: $padding;
+  margin-bottom: $paddingMed;
+}
+
+.view-mode-button {
+  cursor: pointer;
+  padding: $padding/2 $padding;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+  font-size: $fontSmall;
+  transition: background-color 0.2s, border-color 0.2s;
+  border: 1px solid transparent;
+}
+
+.view-mode-button:hover {
+  background-color: #e0e0e0;
+}
+
+.view-mode-button.active {
+  background-color: #e0e0e0;
+  border-color: #ccc;
+  font-weight: 500;
 }
 
 .article-textarea {
@@ -271,6 +411,7 @@ onMounted(() => {
   font-family: monospace;
   font-size: $fontNormal;
   resize: vertical;
+  box-sizing: border-box;
 }
 
 .preview-header {
@@ -298,6 +439,8 @@ onMounted(() => {
   padding: $padding;
   min-height: 500px;
   overflow-y: auto;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .button.disabled {
@@ -315,8 +458,12 @@ onMounted(() => {
 }
 
 @media (max-width: 768px) {
-  .article-editor {
+  .article-editor.splitview {
     grid-template-columns: 1fr;
+  }
+
+  .view-mode-buttons {
+    flex-wrap: wrap;
   }
 }
 </style>
