@@ -1,15 +1,16 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
+import type { Article } from '../types/interfaces'
 
 const router = useRouter()
-const articles = ref([])
+const articles = ref<Article[]>([])
 const isLoading = ref(true)
 const errorMessage = ref('')
 const searchQuery = ref('')
 
 // Fetch all articles (commits with generated articles)
-const fetchArticles = async () => {
+const fetchArticles = async (): Promise<void> => {
   isLoading.value = true
   errorMessage.value = ''
 
@@ -28,7 +29,7 @@ const fetchArticles = async () => {
     }
 
     articles.value = await response.json()
-  } catch (error) {
+  } catch (error: any) {
     errorMessage.value = error.message || 'An error occurred while fetching articles'
   } finally {
     isLoading.value = false
@@ -36,7 +37,7 @@ const fetchArticles = async () => {
 }
 
 // Navigate to article detail page (which is the commit detail page)
-const viewArticle = (id) => {
+const viewArticle = (id: string): void => {
   router.push(`/commit/${id}`)
 }
 
@@ -52,7 +53,7 @@ const filteredArticles = computed(() => {
 })
 
 // Format date for display
-const formatDate = (dateString) => {
+const formatDate = (dateString: string): string => {
   const date = new Date(dateString)
   return date.toLocaleDateString('en-US', {
     year: 'numeric',
@@ -107,19 +108,19 @@ onMounted(() => {
       >
         <div class="article-header">
           <h2 class="article-title">{{ article.message }}</h2>
-          <span class="article-date small">{{ formatDate(article.updatedAt) }}</span>
+          <span class="article-date small" v-if="article.updatedAt">{{ formatDate(article.updatedAt) }}</span>
         </div>
 
         <div class="article-meta">
-          <span class="repository-name small">
+          <span class="repository-name small" v-if="article.repository">
             Repository: {{ article.repository.name }}
           </span>
-          <span class="commit-sha small">
+          <span class="commit-sha small" v-if="article.sha">
             Commit: {{ article.sha.substring(0, 7) }}
           </span>
         </div>
 
-        <div class="article-preview">
+        <div class="article-preview" v-if="article.articleContent">
           <p>{{ article.articleContent.substring(0, 150) }}{{ article.articleContent.length > 150 ? '...' : '' }}</p>
         </div>
 

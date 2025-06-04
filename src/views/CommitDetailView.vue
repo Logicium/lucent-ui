@@ -2,11 +2,12 @@
 import { ref, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import VueMarkdownRender from 'vue-markdown-render'
+import type { Commit, Repository } from '../types/interfaces'
 
 const router = useRouter()
 const route = useRoute()
 const commitId = route.params.id
-const commit = ref(null)
+const commit = ref<Commit | null>(null)
 const isLoading = ref(true)
 const isGenerating = ref(false)
 const errorMessage = ref('')
@@ -27,7 +28,7 @@ const docTypeOptions = [
 ]
 
 // Fetch commit details from the API
-const fetchCommitDetails = async () => {
+const fetchCommitDetails = async (): Promise<void> => {
   isLoading.value = true
   errorMessage.value = ''
 
@@ -48,10 +49,10 @@ const fetchCommitDetails = async () => {
     commit.value = await response.json()
 
     // If article is already generated, set it as the edited article
-    if (commit.value.articleGenerated && commit.value.articleContent) {
+    if (commit.value && commit.value.articleGenerated && commit.value.articleContent) {
       editedArticle.value = commit.value.articleContent
     }
-  } catch (error) {
+  } catch (error:any) {
     errorMessage.value = error.message || 'An error occurred while fetching commit details'
   } finally {
     isLoading.value = false
@@ -59,7 +60,7 @@ const fetchCommitDetails = async () => {
 }
 
 // Generate article for this commit
-const generateArticle = async (forceRegenerate = false) => {
+const generateArticle = async (forceRegenerate: boolean = false): Promise<void> => {
   isGenerating.value = true
   errorMessage.value = ''
 
@@ -86,7 +87,7 @@ const generateArticle = async (forceRegenerate = false) => {
     const updatedCommit = await response.json()
     commit.value = updatedCommit
     editedArticle.value = updatedCommit.articleContent
-  } catch (error) {
+  } catch (error:any) {
     errorMessage.value = error.message || 'An error occurred while generating the article'
   } finally {
     isGenerating.value = false
@@ -94,7 +95,7 @@ const generateArticle = async (forceRegenerate = false) => {
 }
 
 // Save edited article
-const saveArticle = async () => {
+const saveArticle = async (): Promise<void> => {
   try {
     const backendUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000'
     const token = localStorage.getItem('auth_token')
@@ -116,13 +117,13 @@ const saveArticle = async () => {
 
     // Show success message or update UI
     alert('Article saved successfully')
-  } catch (error) {
+  } catch (error:any) {
     errorMessage.value = error.message || 'An error occurred while saving the article'
   }
 }
 
 // Format date for display
-const formatDate = (dateString) => {
+const formatDate = (dateString: string): string => {
   const date = new Date(dateString)
   return date.toLocaleDateString('en-US', {
     year: 'numeric',
@@ -134,8 +135,8 @@ const formatDate = (dateString) => {
 }
 
 // Go back to repository detail page
-const goBack = () => {
-  if (commit.value && commit.value.repository) {
+const goBack = (): void => {
+  if (commit.value && commit.value.repository && commit.value.repository.id) {
     router.push(`/repository/${commit.value.repository.id}`)
   } else {
     router.push('/repositories')
@@ -143,7 +144,7 @@ const goBack = () => {
 }
 
 // Get the label for the selected document type
-const getDocTypeLabel = () => {
+const getDocTypeLabel = (): string => {
   const option = docTypeOptions.find(opt => opt.value === selectedDocType.value)
   return option ? option.label : 'Document'
 }
@@ -168,7 +169,7 @@ onMounted(() => {
       <div class="button ghost mt-1" @click="fetchCommitDetails">Try Again</div>
     </div>
 
-    <template v-else>
+    <template v-else-if="commit">
       <div class="commit-header">
         <h1 class="header">{{ commit.message }}</h1>
         <div class="commit-meta">
@@ -185,7 +186,7 @@ onMounted(() => {
           <h2 class="title">{{ getDocTypeLabel() }}</h2>
 
           <div class="article-actions">
-            <div v-if="!commit.articleGenerated" class="doc-type-selector">
+            <div v-if="commit && !commit.articleGenerated" class="doc-type-selector">
               <label for="docType">Document Type:</label>
               <select id="docType" v-model="selectedDocType" class="doc-type-select">
                 <option v-for="option in docTypeOptions" :key="option.value" :value="option.value">
@@ -203,7 +204,7 @@ onMounted(() => {
               </div>
             </div>
 
-            <div v-else class="doc-actions">
+            <div v-else-if="commit && commit.articleGenerated" class="doc-actions">
               <div class="button-group">
                 <div class="doc-type-selector">
                   <select id="docType" v-model="selectedDocType" class="doc-type-select">
@@ -222,7 +223,7 @@ onMounted(() => {
           </div>
         </div>
 
-        <div v-if="!commit.articleGenerated && !isGenerating" class="article-placeholder">
+        <div v-if="commit && !commit.articleGenerated && !isGenerating" class="article-placeholder">
           <p>No {{ getDocTypeLabel().toLowerCase() }} has been generated for this commit yet.</p>
           <p>Click the "Generate {{ getDocTypeLabel() }}" button to create documentation based on this commit's changes.</p>
         </div>
@@ -232,27 +233,15 @@ onMounted(() => {
           <p>This may take a moment as we analyze the code changes and create comprehensive documentation.</p>
         </div>
 
-        <div v-else>
+        <div v-else-if="commit">
           <div class="view-mode-buttons">
-            <div
-              class="view-mode-button"
-              :class="{ active: viewMode === 'editor' }"
-              @click="viewMode = 'editor'"
-            >
+            <div class="view-mode-button" :class="{ active: viewMode === 'editor' }" @click="viewMode = 'editor'">
               Editor
             </div>
-            <div
-              class="view-mode-button"
-              :class="{ active: viewMode === 'markdown' }"
-              @click="viewMode = 'markdown'"
-            >
+            <div class="view-mode-button" :class="{ active: viewMode === 'markdown' }" @click="viewMode = 'markdown'">
               Markdown
             </div>
-            <div
-              class="view-mode-button"
-              :class="{ active: viewMode === 'splitview' }"
-              @click="viewMode = 'splitview'"
-            >
+            <div class="view-mode-button" :class="{ active: viewMode === 'splitview' }" @click="viewMode = 'splitview'">
               Split View
             </div>
           </div>

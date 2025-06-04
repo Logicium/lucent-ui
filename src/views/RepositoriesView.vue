@@ -1,15 +1,16 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
+import type { Repository } from '../types/interfaces'
 
 const router = useRouter()
-const repositories = ref([])
+const repositories = ref<Repository[]>([])
 const isLoading = ref(true)
 const errorMessage = ref('')
 const searchQuery = ref('')
 
 // Fetch repositories from the API
-const fetchRepositories = async () => {
+const fetchRepositories = async (): Promise<void> => {
   isLoading.value = true
   errorMessage.value = ''
 
@@ -29,7 +30,7 @@ const fetchRepositories = async () => {
 
     const data = await response.json()
     repositories.value = data
-  } catch (error) {
+  } catch (error: any) {
     errorMessage.value = error.message || 'An error occurred while fetching repositories'
   } finally {
     isLoading.value = false
@@ -37,7 +38,7 @@ const fetchRepositories = async () => {
 }
 
 // Navigate to repository detail page
-const viewRepository = (id) => {
+const viewRepository = (id: string): void => {
   router.push(`/repository/${id}`)
 }
 

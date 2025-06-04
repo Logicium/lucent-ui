@@ -1,18 +1,19 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import type { Repository, Commit } from '../types/interfaces'
 
 const router = useRouter()
 const route = useRoute()
 const repositoryId = route.params.id
-const repository = ref(null)
-const commits = ref([])
+const repository = ref<Repository | null>(null)
+const commits = ref<Commit[]>([])
 const isLoading = ref(true)
 const errorMessage = ref('')
 const searchQuery = ref('')
 
 // Fetch repository and commits from the API
-const fetchRepositoryAndCommits = async () => {
+const fetchRepositoryAndCommits = async (): Promise<void> => {
   isLoading.value = true
   errorMessage.value = ''
 
@@ -45,7 +46,7 @@ const fetchRepositoryAndCommits = async () => {
     }
 
     commits.value = await commitsResponse.json()
-  } catch (error) {
+  } catch (error: any) {
     errorMessage.value = error.message || 'An error occurred while fetching data'
   } finally {
     isLoading.value = false
@@ -53,7 +54,7 @@ const fetchRepositoryAndCommits = async () => {
 }
 
 // Navigate to commit detail page
-const viewCommit = (id) => {
+const viewCommit = (id: string): void => {
   router.push(`/commit/${id}`)
 }
 
@@ -69,7 +70,7 @@ const filteredCommits = computed(() => {
 })
 
 // Format date for display
-const formatDate = (dateString) => {
+const formatDate = (dateString: string): string => {
   const date = new Date(dateString)
   return date.toLocaleDateString('en-US', {
     year: 'numeric',
@@ -79,7 +80,7 @@ const formatDate = (dateString) => {
 }
 
 // Go back to repositories list
-const goBack = () => {
+const goBack = (): void => {
   router.push('/repositories')
 }
 
@@ -103,11 +104,11 @@ onMounted(() => {
       <div class="button ghost mt-1" @click="fetchRepositoryAndCommits">Try Again</div>
     </div>
 
-    <template v-else>
+    <template v-else-if="repository">
       <div class="repository-header">
         <h1 class="header">{{ repository.name }}</h1>
         <p v-if="repository.description" class="mb-1">{{ repository.description }}</p>
-        <a :href="repository.url" target="_blank" class="repository-link">View on GitHub</a>
+        <a v-if="repository.url" :href="repository.url" target="_blank" class="repository-link">View on GitHub</a>
       </div>
 
       <div class="commits-section mt-2">
@@ -137,14 +138,14 @@ onMounted(() => {
           >
             <div class="commit-header">
               <h3 class="commit-title">{{ commit.message }}</h3>
-              <span class="commit-date small">{{ formatDate(commit.date) }}</span>
+              <span class="commit-date small" v-if="commit.date">{{ formatDate(commit.date) }}</span>
             </div>
 
             <div class="commit-info">
               <span v-if="commit.authorName" class="commit-author small">
                 By {{ commit.authorName }}
               </span>
-              <span class="commit-sha small">{{ commit.sha.substring(0, 7) }}</span>
+              <span class="commit-sha small" v-if="commit.sha">{{ commit.sha.substring(0, 7) }}</span>
             </div>
 
             <div class="commit-footer">
