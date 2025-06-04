@@ -33,7 +33,7 @@ const fetchCommitDetails = async (): Promise<void> => {
   errorMessage.value = ''
 
   try {
-    const backendUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000'
+    const backendUrl = import.meta.env.VITE_API_URL
     const token = localStorage.getItem('auth_token')
 
     const response = await fetch(`${backendUrl}/commits/${commitId}`, {
@@ -65,7 +65,7 @@ const generateArticle = async (forceRegenerate: boolean = false): Promise<void> 
   errorMessage.value = ''
 
   try {
-    const backendUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000'
+    const backendUrl = import.meta.env.VITE_API_URL
     const token = localStorage.getItem('auth_token')
 
     const response = await fetch(`${backendUrl}/commits/${commitId}/generate-article`, {
@@ -97,7 +97,7 @@ const generateArticle = async (forceRegenerate: boolean = false): Promise<void> 
 // Save edited article
 const saveArticle = async (): Promise<void> => {
   try {
-    const backendUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000'
+    const backendUrl = import.meta.env.VITE_API_URL
     const token = localStorage.getItem('auth_token')
 
     const response = await fetch(`${backendUrl}/commits/${commitId}/update-article`, {

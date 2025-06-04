@@ -13,7 +13,7 @@ const loginWithGithub = () => {
 
   // In a real implementation, we would redirect to the backend's GitHub auth endpoint
   // For now, we'll simulate this by redirecting to a mock URL
-  const backendUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000'
+  const backendUrl = import.meta.env.VITE_API_URL
   window.location.href = `${backendUrl}/auth/github/login`
 }
 

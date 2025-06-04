@@ -15,7 +15,7 @@ const fetchArticles = async (): Promise<void> => {
   errorMessage.value = ''
 
   try {
-    const backendUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000'
+    const backendUrl = import.meta.env.VITE_API_URL
     const token = localStorage.getItem('auth_token')
 
     const response = await fetch(`${backendUrl}/commits`, {
